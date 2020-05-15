@@ -1,0 +1,21 @@
+version: "3.7"
+services:
+  bootnode:
+    image: gecko-7c4abde
+    command: /gecko/build/ava --public-ip=127.0.0.1 --http-port=9650 --staking-port=9651 --snow-sample-size=2 --snow-quorum-size=2 --staking-tls-enabled=false
+    ports:
+      - "9650:9650"
+      - "9651:9651"
+  spectator1:
+    image: gecko-7c4abde
+    command: >
+      /bin/bash -c
+      "while ! curl -XPOST -H "content-type:application/json" bootnode:9650/ext/P; do
+        echo 'Sleeping until boot node is up...';
+        sleep 1;
+      done;
+      echo 'Boot node is live';
+      /gecko/build/ava --public-ip=127.0.0.1 --http-port=9650 --staking-port=9651 --snow-sample-size=2 --snow-quorum-size=2 --staking-tls-enabled=false --bootstrap-ips=127.0.0.1:9651"
+    ports:
+      - "9652:9650"
+      - "9653:9651"
