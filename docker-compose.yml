@@ -6,11 +6,12 @@ services:
     ports:
       - "9650:9650"
       - "9651:9651"
-  spectator1:
+  spectator:
     image: gecko-7c4abde
     command: >
       /bin/bash -c
-      "while ! curl -XPOST -H "content-type:application/json" bootnode:9650/ext/P; do
+      "set -o pipefail;
+      while ! curl -XPOST -H 'content-type:application/json' bootnode:9650/ext/P --data '{\"jsonrpc\": \"2.0\", \"method\": \"platform.getCurrentValidators\", \"params\":{}, \"id\": 1 }' | grep -v error; do
         echo 'Sleeping until boot node is up...';
         sleep 1;
       done;
